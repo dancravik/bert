@@ -1,0 +1,11 @@
+outputs/*
+!outputs/.gitkeep
+__pycache__/
+*.pyc
+*.pt
+*.bin
+.ipynb_checkpoints/
+.comet.config
+*.csv
+!configs/*.csv
+.env

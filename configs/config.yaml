@@ -1,0 +1,75 @@
+# =========================================================
+# Конфиг всего эксперимента. Меняй значения тут, код трогать не нужно.
+# =========================================================
+
+comet:
+  api_key: "YOUR_COMET_API_KEY"          # вставь свой ключ с comet.com/account-settings
+  workspace: "your-comet-workspace"       # имя воркспейса в comet
+  project_name: "bert-text-classification"
+  disabled: false                         # true -> логирование выключено (для отладки без ключа)
+
+data:
+  # На Kaggle: подключи датасет "Covid-19 NLP Text Classification" (datatattle) через Add Data
+  # и поправь пути под то, как Kaggle его смонтирует (/kaggle/input/<slug>/...)
+  train_path: "/kaggle/input/covid19-nlp-text-classification/Corona_NLP_train.csv"
+  test_path: "/kaggle/input/covid19-nlp-text-classification/Corona_NLP_test.csv"
+  encoding: "latin1"
+  text_column: "OriginalTweet"
+  label_column: "Sentiment"
+  max_length: 128
+  val_size: 0.1          # доля train, уходящая в валидацию (stratified)
+  seed: 42
+  clean_text: true       # убираем url, @упоминания, html-сущности, #
+
+training:
+  epochs: 4
+  batch_size: 32
+  eval_batch_size: 64
+  lr: 2.0e-5               # lr backbone при полном fine-tune
+  head_lr: 1.0e-3          # lr головы, когда backbone заморожен (используется если freeze_backbone=true)
+  weight_decay: 0.01
+  warmup_ratio: 0.06
+  max_grad_norm: 1.0
+  optimizer: "AdamW"
+  scheduler: "linear"
+  freeze_backbone: false   # значение по умолчанию, если sweep не запускался
+  early_stopping_patience: 2
+  fp16: true
+  num_workers: 2
+
+head:
+  dropout: 0.1
+  hidden_dim: null         # null = Linear(hidden_size -> num_labels) сразу; число = добавить скрытый слой
+
+# Небольшой grid search для выбора бейзлайна (freeze vs full fine-tune, lr, batch_size).
+# Диапазоны lr разные не просто так: когда backbone заморожен, учится только голова,
+# и ей обычно нужен lr на 1-2 порядка больше, чем при полном fine-tune всей модели.
+sweep:
+  epochs: 2                # укороченное обучение для сравнения вариантов
+  frozen_backbone:
+    lr_values: [1.0e-3, 5.0e-4, 1.0e-4]
+    batch_size_values: [32, 64]
+  full_finetune:
+    lr_values: [5.0e-5, 2.0e-5, 1.0e-5]
+    batch_size_values: [16, 32]
+
+models:
+  baseline:
+    checkpoint: "bert-base-uncased"
+    display_name: "BERT-base"
+
+  # 4 модификации BERT. Выбраны как наиболее цитируемые и часто сравниваемые
+  # в литературе производные BERT (см. README, раздел "Модификации").
+  modifications:
+    - checkpoint: "roberta-base"
+      display_name: "RoBERTa-base"
+    - checkpoint: "distilbert-base-uncased"
+      display_name: "DistilBERT-base"
+    - checkpoint: "albert-base-v2"
+      display_name: "ALBERT-base-v2"
+    - checkpoint: "google/electra-base-discriminator"
+      display_name: "ELECTRA-base-discriminator"
+
+output:
+  dir: "outputs"
+  top_k_errors: 20         # сколько худших/лучших по loss примеров сохранять и логировать
