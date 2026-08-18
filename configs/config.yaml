@@ -3,8 +3,8 @@
 # =========================================================
 
 comet:
-  api_key: "YOUR_COMET_API_KEY"          # вставь свой ключ с comet.com/account-settings
-  workspace: "your-comet-workspace"       # имя воркспейса в comet
+  api_key: "sqAgtJu3JqBTsHLGMTekvp9GH"          # вставь свой ключ с comet.com/account-settings
+  workspace: "danchenko-rtm"       # имя воркспейса в comet
   project_name: "bert-text-classification"
   disabled: false                         # true -> логирование выключено (для отладки без ключа)
 
