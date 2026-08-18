@@ -11,8 +11,8 @@ comet:
 data:
   # На Kaggle: подключи датасет "Covid-19 NLP Text Classification" (datatattle) через Add Data
   # и поправь пути под то, как Kaggle его смонтирует (/kaggle/input/<slug>/...)
-  train_path: "/kaggle/input/covid19-nlp-text-classification/Corona_NLP_train.csv"
-  test_path: "/kaggle/input/covid19-nlp-text-classification/Corona_NLP_test.csv"
+  train_path: "/kaggle/input/datasets/datatattle/covid-19-nlp-text-classification/Corona_NLP_train.csv"
+  test_path: "  /kaggle/input/datasets/datatattle/covid-19-nlp-text-classification/Corona_NLP_test.csv"
   encoding: "latin1"
   text_column: "OriginalTweet"
   label_column: "Sentiment"
